@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
@@ -15,10 +15,18 @@ export class UserService {
     private readonly authService: AuthService,
   ) {}
 
-  async signIn(signInRequestDto: SignInRequestDto): Promise<User> {
+  async signIn(signInRequestDto: SignInRequestDto): Promise<object> {
     const { email, password } = signInRequestDto;
-    const newUSer = new User({ email, password });
-    return this.userRepository.save(newUSer);
+    const user = await this.userRepository.findOne({ where: { email } });
+    if (!user) {
+      throw new BadRequestException('The email does not exist');
+    }
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      throw new BadRequestException('Passwords do not match');
+    }
+    const accessToken = this.authService.signWithJwt({ id: user.id, email: user.email });
+    return { accessToken };
   }
 
   async signUp(signUpRequestDto: SignUpRequestDto): Promise<User> {
