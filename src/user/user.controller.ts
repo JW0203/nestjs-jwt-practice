@@ -1,4 +1,4 @@
-import { Controller, Post } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { UserService } from './user.service';
 import { SignInRequestDto } from './dto/signIn.request.dto';
 
@@ -6,7 +6,7 @@ import { SignInRequestDto } from './dto/signIn.request.dto';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post()
+  @Get()
   signIn(signInRequestDto: SignInRequestDto) {
     return this.userService.signIn(signInRequestDto);
   }
