@@ -8,7 +8,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  signIn(signInRequestDto: SignInRequestDto) {
+  signIn(@Body() signInRequestDto: SignInRequestDto) {
     return this.userService.signIn(signInRequestDto);
   }
 
