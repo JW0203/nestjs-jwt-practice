@@ -6,6 +6,7 @@ import { AuthService } from '../auth/auth.service';
 import { SignInRequestDto } from './dto/signIn.request.dto';
 import { SignUpRequestDto } from './dto/signUp.request.dto';
 import * as bcrypt from 'bcrypt';
+import { MyInfoResponseDto, MyInfoResponsetDto } from './dto/myInfo.request.dto';
 
 @Injectable()
 export class UserService {
@@ -35,5 +36,13 @@ export class UserService {
     const hashPassword = await bcrypt.hash(password, 10);
     const user = new User({ email, password: hashPassword });
     return this.userRepository.save(user);
+  }
+  async getMyInfo(userId: number): Promise<MyInfoResponseDto> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new BadRequestException('User does not exist');
+    }
+    const { id, email, createdAt } = user;
+    return new MyInfoResponseDto({ id, email, createdAt });
   }
 }
