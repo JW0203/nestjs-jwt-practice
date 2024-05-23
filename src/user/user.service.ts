@@ -44,7 +44,7 @@ export class UserService {
     }
     const isValidEmail = email.indexOf('@') === email.lastIndexOf('@');
     if (!isValidEmail) {
-      throw new BadRequestException('Email should contain only on @');
+      throw new BadRequestException('Email should contain only one @');
     }
     if (email.split(' ').length > 1) {
       throw new BadRequestException('Email should not contain the empty space');
