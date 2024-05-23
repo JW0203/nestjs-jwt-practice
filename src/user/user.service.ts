@@ -6,7 +6,7 @@ import { AuthService } from '../auth/auth.service';
 import { SignInRequestDto } from './dto/signIn.request.dto';
 import { SignUpRequestDto } from './dto/signUp.request.dto';
 import * as bcrypt from 'bcrypt';
-import { MyInfoResponseDto, MyInfoResponsetDto } from './dto/myInfo.request.dto';
+import { MyInfoResponseDto } from './dto/myInfo.request.dto';
 
 @Injectable()
 export class UserService {
@@ -15,6 +15,10 @@ export class UserService {
     private userRepository: Repository<User>,
     private readonly authService: AuthService,
   ) {}
+
+  async findOne(userEmail: string): Promise<User> {
+    return this.userRepository.findOne({ where: { email: userEmail } });
+  }
 
   async signIn(signInRequestDto: SignInRequestDto): Promise<object> {
     const { email, password } = signInRequestDto;
@@ -33,8 +37,20 @@ export class UserService {
   async signUp(signUpRequestDto: SignUpRequestDto): Promise<User> {
     const { email, password } = signUpRequestDto;
     // email 검증, password 검증 필요
-    const hashPassword = await bcrypt.hash(password, 10);
-    const user = new User({ email, password: hashPassword });
+    // const hashPassword = await bcrypt.hash(password, 10);
+    const isRegisteredEmail = await this.userRepository.findOne({ where: { email } });
+    if (isRegisteredEmail) {
+      throw new BadRequestException('Email already exists');
+    }
+    const isValidEmail = email.indexOf('@') === email.lastIndexOf('@');
+    if (!isValidEmail) {
+      throw new BadRequestException('Email should contain only on @');
+    }
+    if (email.split(' ').length > 1) {
+      throw new BadRequestException('Email should not contain the empty space');
+    }
+
+    const user = new User({ email, password });
     return this.userRepository.save(user);
   }
   async getMyInfo(userId: number): Promise<MyInfoResponseDto> {
