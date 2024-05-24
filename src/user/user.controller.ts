@@ -7,7 +7,7 @@ import { SignUpRequestDto } from './dto/signUp.request.dto';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get()
+  @Post('sign-in')
   signIn(@Body() signInRequestDto: SignInRequestDto) {
     return this.userService.signIn(signInRequestDto);
   }
@@ -17,7 +17,7 @@ export class UserController {
     return this.userService.getMyInfo(parseInt(id));
   }
 
-  @Post()
+  @Post('sign-up')
   signUp(@Body() signUpRequestDto: SignUpRequestDto) {
     return this.userService.signUp(signUpRequestDto);
   }
