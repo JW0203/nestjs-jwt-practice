@@ -16,7 +16,7 @@ export class UserService {
     private readonly authService: AuthService,
   ) {}
 
-  async findOne(userEmail: string): Promise<User> {
+  async findOne(userEmail: string): Promise<User | undefined> {
     return this.userRepository.findOne({ where: { email: userEmail } });
   }
 
@@ -26,9 +26,10 @@ export class UserService {
     if (!user) {
       throw new BadRequestException('The email does not exist');
     }
-    const passwordMatch = await bcrypt.compare(password, user.password);
+    // const passwordMatch = await bcrypt.compare(password, user.password);
+    const passwordMatch = user.password === password;
     if (!passwordMatch) {
-      throw new BadRequestException('Passwords do not match');
+      throw new BadRequestException('Password does not match');
     }
     const accessToken = this.authService.signWithJwt({ id: user.id, email: user.email });
     return { accessToken };
