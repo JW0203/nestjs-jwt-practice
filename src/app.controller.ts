@@ -1,10 +1,15 @@
 import { Controller, Get, Post, UseGuards, Request } from '@nestjs/common';
 import { AppService } from './app.service';
 import { LocalAuthGuard } from './auth/local-auth.guard';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { UserService } from './user/user.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    private readonly userService: UserService,
+  ) {}
 
   @Get()
   getHello(): string {
@@ -21,12 +26,20 @@ export class AppController {
       "password" : "12345678"
     }
     이렇게 주어야 정상적인 작동을 하여 아래를 반환
-
-    "id": 6,
-    "email": "test@test.com",
-    "createdAt": "2024-05-24T09:35:14.740Z"
-
+    req.user = {
+      "id": 6,
+      "email": "test@test.com",
+      "password" : "12345678"
+      "createdAt": "2024-05-24T09:35:14.740Z"
+    }
+    위 req 은 auth.service.ts - validateUser 로 부터 만들어진 것
     */
+    return this.userService.signIn(req.user);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  getProfile(@Request() req) {
     return req.user;
   }
 }
