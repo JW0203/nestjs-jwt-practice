@@ -40,6 +40,7 @@ export class AppController {
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@Request() req) {
-    return req.user;
+    //req.user
+    return this.userService.getMyInfo(req.user.id); // id email createdAt 만 보내기
   }
 }
