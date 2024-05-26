@@ -7,6 +7,7 @@ import { SignInRequestDto } from './dto/signIn.request.dto';
 import { SignUpRequestDto } from './dto/signUp.request.dto';
 import * as bcrypt from 'bcrypt';
 import { MyInfoResponseDto } from './dto/myInfo.request.dto';
+import { SignUpResponseDto } from './dto/signUp.response.dto';
 
 @Injectable()
 export class UserService {
@@ -35,9 +36,9 @@ export class UserService {
     return { accessToken };
   }
 
-  async signUp(signUpRequestDto: SignUpRequestDto): Promise<User> {
+  async signUp(signUpRequestDto: SignUpRequestDto): Promise<SignUpResponseDto> {
     const { email, password } = signUpRequestDto;
-    // email 검증, password 검증 필요
+    //  password  암호화 필요
     // const hashPassword = await bcrypt.hash(password, 10);
     const isRegisteredEmail = await this.userRepository.findOne({ where: { email } });
     if (isRegisteredEmail) {
@@ -52,7 +53,9 @@ export class UserService {
     }
 
     const user = new User({ email, password });
-    return this.userRepository.save(user);
+    await this.userRepository.save(user);
+    const newUser = await this.userRepository.findOne({ where: { email } });
+    return new SignUpResponseDto({ id: newUser.id, email: newUser.email, createdAt: newUser.createdAt });
   }
   async getMyInfo(userId: number): Promise<MyInfoResponseDto> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
