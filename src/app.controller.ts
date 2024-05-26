@@ -15,14 +15,14 @@ export class AppController {
   getHello(): string {
     return this.appService.getHello();
   }
-  // @UseGuards(AuthGuard('local'))
+
   @UseGuards(LocalAuthGuard)
   @Post('auth/login')
   async login(@Request() req) {
     /*
     이 라우트를 사용할 때  body 에
     {
-      "username" : "test@test.com",
+      "username" : "test@test.com", << 이 부분을 email 로 바꾸는 방법은 없나??
       "password" : "12345678"
     }
     이렇게 주어야 정상적인 작동을 하여 아래를 반환
