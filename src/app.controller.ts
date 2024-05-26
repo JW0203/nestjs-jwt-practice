@@ -33,6 +33,16 @@ export class AppController {
       "createdAt": "2024-05-24T09:35:14.740Z"
     }
     위 req 은 auth.service.ts - validateUser 로 부터 만들어진 것
+
+    {
+      "email" : "test@test.com",
+      "password" : "12345678"
+    }
+    를 입력하면
+    {
+      "message": "Unauthorized",
+      "statusCode": 401
+    } 를 반환
     */
     return this.userService.signIn(req.user);
   }
