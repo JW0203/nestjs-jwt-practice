@@ -23,22 +23,13 @@ export class UserService {
 
   async signIn(signInRequestDto: SignInRequestDto): Promise<object> {
     const { email, id } = signInRequestDto;
-    // const user = await this.userRepository.findOne({ where: { email } });
-    // if (!user) {
-    //   throw new BadRequestException('The email does not exist');
-    // }
-    // const passwordMatch = await bcrypt.compare(password, user.password);
-    // // const passwordMatch = user.password === password;
-    // if (!passwordMatch) {
-    //   throw new BadRequestException('Password does not match');
-    // }
     const accessToken = this.authService.signWithJwt({ id, email });
     return { accessToken };
   }
 
   async signUp(signUpRequestDto: SignUpRequestDto): Promise<SignUpResponseDto> {
     const { email, password } = signUpRequestDto;
-    //  password  암호화 필요
+
     const hashPassword = await bcrypt.hash(password, 10);
     const isRegisteredEmail = await this.userRepository.findOne({ where: { email } });
     if (isRegisteredEmail) {

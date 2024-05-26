@@ -24,7 +24,7 @@ export class AuthService {
     if (!passwordMatch) {
       throw new BadRequestException('Password does not match');
     }
-    // const { password, createdAt, ...result } = user;
+
     const { id, email } = user;
     return { id, email };
   }
