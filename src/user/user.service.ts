@@ -7,6 +7,7 @@ import { SignInRequestDto } from './dto/signIn.request.dto';
 import { SignUpRequestDto } from './dto/signUp.request.dto';
 import * as bcrypt from 'bcrypt';
 import { MyInfoResponseDto } from './dto/myInfo.request.dto';
+import { SignUpResponseDto } from './dto/signUp.response.dto';
 
 @Injectable()
 export class UserService {
@@ -21,24 +22,24 @@ export class UserService {
   }
 
   async signIn(signInRequestDto: SignInRequestDto): Promise<object> {
-    const { email, password } = signInRequestDto;
-    const user = await this.userRepository.findOne({ where: { email } });
-    if (!user) {
-      throw new BadRequestException('The email does not exist');
-    }
+    const { email, id } = signInRequestDto;
+    // const user = await this.userRepository.findOne({ where: { email } });
+    // if (!user) {
+    //   throw new BadRequestException('The email does not exist');
+    // }
     // const passwordMatch = await bcrypt.compare(password, user.password);
-    const passwordMatch = user.password === password;
-    if (!passwordMatch) {
-      throw new BadRequestException('Password does not match');
-    }
-    const accessToken = this.authService.signWithJwt({ id: user.id, email: user.email });
+    // // const passwordMatch = user.password === password;
+    // if (!passwordMatch) {
+    //   throw new BadRequestException('Password does not match');
+    // }
+    const accessToken = this.authService.signWithJwt({ id, email });
     return { accessToken };
   }
 
-  async signUp(signUpRequestDto: SignUpRequestDto): Promise<User> {
+  async signUp(signUpRequestDto: SignUpRequestDto): Promise<SignUpResponseDto> {
     const { email, password } = signUpRequestDto;
-    // email 검증, password 검증 필요
-    // const hashPassword = await bcrypt.hash(password, 10);
+    //  password  암호화 필요
+    const hashPassword = await bcrypt.hash(password, 10);
     const isRegisteredEmail = await this.userRepository.findOne({ where: { email } });
     if (isRegisteredEmail) {
       throw new BadRequestException('Email already exists');
@@ -51,8 +52,10 @@ export class UserService {
       throw new BadRequestException('Email should not contain the empty space');
     }
 
-    const user = new User({ email, password });
-    return this.userRepository.save(user);
+    const user = new User({ email, password: hashPassword });
+    await this.userRepository.save(user);
+    const newUser = await this.userRepository.findOne({ where: { email } });
+    return new SignUpResponseDto({ id: newUser.id, email: newUser.email, createdAt: newUser.createdAt });
   }
   async getMyInfo(userId: number): Promise<MyInfoResponseDto> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
