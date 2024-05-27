@@ -8,6 +8,7 @@ import { SignUpRequestDto } from './dto/signUp.request.dto';
 import * as bcrypt from 'bcrypt';
 import { MyInfoResponseDto } from './dto/myInfo.request.dto';
 import { SignUpResponseDto } from './dto/signUp.response.dto';
+import * as process from 'node:process';
 
 @Injectable()
 export class UserService {
@@ -30,7 +31,7 @@ export class UserService {
   async signUp(signUpRequestDto: SignUpRequestDto): Promise<SignUpResponseDto> {
     const { email, password } = signUpRequestDto;
 
-    const hashPassword = await bcrypt.hash(password, 10);
+    const hashPassword = await bcrypt.hash(password, parseInt(process.env.SALT_ROUNDS));
     const isRegisteredEmail = await this.userRepository.findOne({ where: { email } });
     if (isRegisteredEmail) {
       throw new BadRequestException('Email already exists');
