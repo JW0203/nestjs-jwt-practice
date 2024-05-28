@@ -1,8 +1,8 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from './user.entity';
-import { AuthService } from '../auth/auth.service';
+import { User } from '../domain/user.entity';
+import { AuthService } from '../../auth/application/auth.service';
 import { SignInRequestDto } from './dto/signIn.request.dto';
 import { SignUpRequestDto } from './dto/signUp.request.dto';
 import * as bcrypt from 'bcrypt';
@@ -10,7 +10,7 @@ import { MyInfoResponseDto } from './dto/myInfo.request.dto';
 import { SignUpResponseDto } from './dto/signUp.response.dto';
 import * as process from 'node:process';
 import { ChangePasswordRequestDto } from './dto/changePassword.request.dto';
-import { ValidateUserRequestDto } from '../auth/dto/validateUser.request.dto';
+import { ValidateUserRequestDto } from '../../auth/application/dto/validateUser.request.dto';
 
 @Injectable()
 export class UserService {

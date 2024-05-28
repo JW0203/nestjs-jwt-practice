@@ -1,6 +1,6 @@
 import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from '../user/user.service';
+import { UserService } from '../../user/application/user.service';
 import * as bcrypt from 'bcrypt';
 import { ValidateUserRequestDto } from './dto/validateUser.request.dto';
 import { ValidateUserResponseDto } from './dto/validateUser.response.dto';

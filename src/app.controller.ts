@@ -1,9 +1,9 @@
 import { Controller, Get, Post, UseGuards, Request, Delete, HttpStatus, HttpCode, Patch, Body } from '@nestjs/common';
 import { AppService } from './app.service';
-import { LocalAuthGuard } from './auth/local-auth.guard';
-import { JwtAuthGuard } from './auth/jwt-auth.guard';
-import { UserService } from './user/user.service';
-import { ChangePasswordRequestDto } from './user/dto/changePassword.request.dto';
+import { LocalAuthGuard } from './auth/application/local-auth.guard';
+import { JwtAuthGuard } from './auth/application/jwt-auth.guard';
+import { UserService } from './user/application/user.service';
+import { ChangePasswordRequestDto } from './user/application/dto/changePassword.request.dto';
 
 @Controller()
 export class AppController {

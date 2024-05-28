@@ -3,11 +3,11 @@ dotenv.config();
 import { forwardRef, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
-import { AuthController } from './auth.controller';
-import { UserModule } from '../user/user.module';
+import { AuthController } from '../presentation/auth.controller';
+import { UserModule } from '../../user/application/user.module';
 import { PassportModule } from '@nestjs/passport';
-import { LocalStrategy } from './local.strategy';
-import { JwtStrategy } from './jwt.strategy';
+import { LocalStrategy } from '../presentation/local.strategy';
+import { JwtStrategy } from '../presentation/jwt.strategy';
 import { ConfigService } from '@nestjs/config';
 
 @Module({

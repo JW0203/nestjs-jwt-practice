@@ -1,8 +1,8 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, Post } from '@nestjs/common';
-import { UserService } from './user.service';
-import { SignInRequestDto } from './dto/signIn.request.dto';
-import { SignUpRequestDto } from './dto/signUp.request.dto';
-import { ChangePasswordRequestDto } from './dto/changePassword.request.dto';
+import { UserService } from '../application/user.service';
+import { SignInRequestDto } from '../application/dto/signIn.request.dto';
+import { SignUpRequestDto } from '../application/dto/signUp.request.dto';
+import { ChangePasswordRequestDto } from '../application/dto/changePassword.request.dto';
 
 @Controller('users')
 export class UserController {
