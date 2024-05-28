@@ -2,6 +2,8 @@ import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/com
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import * as bcrypt from 'bcrypt';
+import { ValidateUserRequestDto } from './dto/validateUser.request.dto';
+import { ValidateUserResponseDto } from './dto/validateUser.response.dto';
 
 @Injectable()
 export class AuthService {
@@ -15,17 +17,19 @@ export class AuthService {
     return this.jwtService.sign(payload);
   }
 
-  async validateUser(userEmail: string, userPassword: string) {
-    const user = await this.userService.findOne(userEmail);
+  async validateUser(validateUserRequestDto: ValidateUserRequestDto) {
+    const { email, password } = validateUserRequestDto;
+    console.log('auth validateUser');
+    console.log({ email, password });
+    const user = await this.userService.findOne(email);
     if (!user) {
       throw new BadRequestException('The email does not exist');
     }
-    const passwordMatch = await bcrypt.compare(userPassword, user.password);
+    const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
       throw new BadRequestException('Password does not match');
     }
 
-    const { id, email } = user;
-    return { id, email };
+    return new ValidateUserResponseDto({ id: user.id, email });
   }
 }

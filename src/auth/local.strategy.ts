@@ -3,6 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';
 import { AuthService } from './auth.service';
 import { UserService } from '../user/user.service';
+import { ValidateUserRequestDto } from './dto/validateUser.request.dto';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -13,14 +14,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     super();
   }
   async validate(email: string, password: string): Promise<any> {
-    // const user = await this.authService.validateUser(email, password);
-    // const token = await this.userService.signIn({ email, password });
-    // if (!token) {
-    //   throw new UnauthorizedException('Cannot find user');
-    // }
-    // return token;
-
-    const user = await this.authService.validateUser(email, password);
+    const user = await this.authService.validateUser(new ValidateUserRequestDto({ email, password }));
     if (!user) {
       throw new UnauthorizedException('Cannot find user');
     }
