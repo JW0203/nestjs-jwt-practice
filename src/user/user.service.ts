@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
@@ -9,6 +9,8 @@ import * as bcrypt from 'bcrypt';
 import { MyInfoResponseDto } from './dto/myInfo.request.dto';
 import { SignUpResponseDto } from './dto/signUp.response.dto';
 import * as process from 'node:process';
+import { ChangePasswordRequestDto } from './dto/changePassword.request.dto';
+import { ValidateUserRequestDto } from '../auth/dto/validateUser.request.dto';
 
 @Injectable()
 export class UserService {
@@ -23,6 +25,8 @@ export class UserService {
   }
 
   async signIn(signInRequestDto: SignInRequestDto): Promise<object> {
+    console.log('user signIn');
+    console.log(signInRequestDto);
     const { email, id } = signInRequestDto;
     const accessToken = this.authService.signWithJwt({ id, email });
     return { accessToken };
@@ -56,5 +60,25 @@ export class UserService {
     }
     const { id, email, createdAt } = user;
     return new MyInfoResponseDto({ id, email, createdAt });
+  }
+
+  async changePassword(changePasswordRequestDto: ChangePasswordRequestDto): Promise<any> {
+    const { email, password, newPassword } = changePasswordRequestDto;
+    const user = await this.userRepository.findOne({ where: { email } });
+    const validUser = await this.authService.validateUser(new ValidateUserRequestDto({ email, password }));
+    if (!validUser) {
+      throw new UnauthorizedException();
+    }
+    user.password = await bcrypt.hash(newPassword, parseInt(process.env.SALT_ROUNDS));
+    const { id, createdAt, updatedAt } = await this.userRepository.save(user);
+    return { id, createdAt, updatedAt };
+  }
+
+  async deleteMyInfo(id: number): Promise<void> {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new BadRequestException('User does not exist');
+    }
+    await this.userRepository.softDelete(id);
   }
 }
