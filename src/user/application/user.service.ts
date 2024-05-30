@@ -51,8 +51,9 @@ export class UserService {
     const user = new User({ email, password: hashPassword });
     await this.userRepository.save(user);
     const newUser = await this.userRepository.findOne({ where: { email } });
-    return new SignUpResponseDto({ id: newUser.id, email: newUser.email, createdAt: newUser.createdAt });
+    return new SignUpResponseDto(newUser);
   }
+
   async getMyInfo(userId: number): Promise<MyInfoResponseDto> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
