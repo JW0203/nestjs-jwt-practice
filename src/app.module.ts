@@ -14,8 +14,10 @@ import * as Joi from 'joi';
   imports: [
     ConfigModule.forRoot({
       validationSchema: Joi.object({
-        NODE_ENV: Joi.string().valid('dev', 'prod', 'local', 'debug').default('development'),
+        NODE_ENV: Joi.string().valid('dev', 'prod', 'local', 'debug').default('local'),
       }),
+      isGlobal: true,
+      envFilePath: `.env.${process.env.NODE_ENV}`,
     }),
 
     TypeOrmModule.forRootAsync({
@@ -34,10 +36,7 @@ import * as Joi from 'joi';
         namingStrategy: new SnakeNamingStrategy(),
       }),
     }),
-    ConfigModule.forRoot({
-      isGlobal: true,
-      envFilePath: `.env.${process.env.NODE_ENV}`,
-    }),
+
     UserModule,
     AuthModule,
   ],

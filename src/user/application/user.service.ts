@@ -11,6 +11,7 @@ import { SignUpResponseDto } from './dto/signUp.response.dto';
 import * as process from 'node:process';
 import { ChangePasswordRequestDto } from './dto/changePassword.request.dto';
 import { ValidateUserRequestDto } from '../../auth/application/dto/validateUser.request.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserService {
@@ -18,6 +19,7 @@ export class UserService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private readonly authService: AuthService,
+    private readonly configService: ConfigService,
   ) {}
 
   async findOne(userEmail: string): Promise<User | undefined> {
@@ -34,8 +36,7 @@ export class UserService {
 
   async signUp(signUpRequestDto: SignUpRequestDto): Promise<SignUpResponseDto> {
     const { email, password } = signUpRequestDto;
-
-    const hashPassword = await bcrypt.hash(password, parseInt(process.env.SALT_ROUNDS));
+    const hashPassword = await bcrypt.hash(password, this.configService.get<number>('SALT_ROUNDS'));
     const isRegisteredEmail = await this.userRepository.findOne({ where: { email } });
     if (isRegisteredEmail) {
       throw new BadRequestException('Email already exists');
@@ -70,7 +71,7 @@ export class UserService {
     if (!validUser) {
       throw new UnauthorizedException();
     }
-    user.password = await bcrypt.hash(newPassword, parseInt(process.env.SALT_ROUNDS));
+    user.password = await bcrypt.hash(newPassword, this.configService.get<number>('SALT_ROUNDS'));
     const { id, createdAt, updatedAt } = await this.userRepository.save(user);
     return { id, createdAt, updatedAt };
   }
